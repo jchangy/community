@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+/* 드롭다운 메뉴에 마우스를 올렸을 때 열리도록 설정 */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* 드롭다운 메뉴는 기본적으로 숨겨두기 */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  /* (선택 사항) 드롭다운이 메뉴 끝에 위치하도록 하기 위한 설정 */
+  right: 0;
+}

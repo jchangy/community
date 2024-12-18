@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.PostInfoMapper">
+<select id="selectHotPosts" resultType="map">
+    SELECT PI.*, COUNT(LI.PI_NUM) as likeCount
+	FROM POST_INFO PI
+	LEFT JOIN LIKE_INFO LI  
+	ON PI.PI_NUM = LI.PI_NUM
+	WHERE PI.STATUS = 'ACTIVE'
+	GROUP BY PI.PI_NUM
+	ORDER BY (PI.PI_VIEWS * 0.3) + (COUNT(LI.PI_NUM) * 0.7) DESC
+	LIMIT 3
+</select>
+	<select id="getPostCount" resultType="int">
+	    SELECT COUNT(*) FROM POST_INFO
+	</select>
+	<select id="selectPostsTotal" resultType="int">
+		SELECT COUNT(*)
+		FROM POST_INFO PI
+		JOIN USER_INFO UI
+		ON PI.UI_NUM = UI.UI_NUM
+		<where>
+			<if test='piTitle != null and piTitle != ""'>
+				AND PI.PI_TITLE LIKE CONCAT('%',#{piTitle},'%')
+			</if>
+			<if test='piContent != null and piContent != ""'>
+				AND PI.PI_CONTENT LIKE CONCAT('%',#{piContent},'%')
+			</if>
+			<if test='uiNickName != null and uiNickName !=""'>
+				AND UI.UI_NICKNAME LIKE CONCAT('%',#{uiNickName},'%')
+			</if>
+			AND STATUS = 'ACTIVE'
+		</where>
+	</select>
+	<select id="selectPostsForAdmin" resultType="com.web.community.vo.PostInfoVO">
+	    SELECT PI.PI_NUM, PI.PI_TITLE, PI.PI_CONTENT, PI.PI_CREATED, PI.PI_UPDATED, PI.PI_VIEWS, UI.UI_NICKNAME, PI.STATUS
+	    FROM POST_INFO PI
+	    JOIN USER_INFO UI ON UI.UI_NUM = PI.UI_NUM
+	    <where>
+	        <if test='piTitle != null and piTitle != ""'>
+	            AND PI.PI_TITLE LIKE CONCAT('%',#{piTitle},'%')
+	        </if>
+	        <if test='piContent != null and piContent != ""'>
+	            AND PI.PI_CONTENT LIKE CONCAT('%',#{piContent},'%')
+	        </if>
+	        <if test='uiNickName != null and uiNickName != ""'>
+	            AND UI.UI_NICKNAME LIKE CONCAT('%',#{uiNickName},'%')
+	        </if>
+	    </where>
+	    ORDER BY PI.PI_NUM DESC
+	    LIMIT #{start}, #{count}
+	</select>
+	<select id="selectPosts" resultType="com.web.community.vo.PostInfoVO">
+		SELECT PI.PI_NUM, PI.PI_TITLE, PI.PI_CONTENT, PI.PI_CREATED, PI.PI_UPDATED, PI.PI_VIEWS, UI.UI_NICKNAME 
+		FROM POST_INFO PI 
+		JOIN USER_INFO UI 
+		ON UI.UI_NUM = PI.UI_NUM
+		<where>
+			<if test='piTitle != null and piTitle != ""'>
+				AND PI.PI_TITLE LIKE CONCAT('%',#{piTitle},'%')
+			</if>
+			<if test='piContent != null and piContent != ""'>
+				AND PI.PI_CONTENT LIKE CONCAT('%',#{piContent},'%')
+			</if>
+			<if test='uiNickName != null and uiNickName !=""'>
+				AND UI.UI_NICKNAME LIKE CONCAT('%',#{uiNickName},'%')
+			</if>
+			AND PI.STATUS = 'ACTIVE'
+		</where>
+		ORDER BY PI.PI_NUM DESC
+		LIMIT #{start}, #{count}
+	</select>
+	<select id="selectPost" resultType="com.web.community.vo.PostInfoVO">
+		SELECT PI.PI_NUM, PI.PI_TITLE, PI.PI_CONTENT, UI.UI_NICKNAME, PI.PI_CREATED, PI.PI_UPDATED, PI.PI_VIEWS, PI.UI_NUM 
+		FROM POST_INFO PI 
+		JOIN USER_INFO UI 
+		ON UI.UI_NUM = PI.UI_NUM 
+		WHERE PI.PI_NUM = #{piNum}
+	</select>
+	<select id="selectNextPost" resultType="com.web.community.vo.PostInfoVO">
+		SELECT PI_NUM, PI_TITLE, PI_CONTENT, PI_CREATED, PI_VIEWS, UI_NUM, STATUS FROM post_info
+		WHERE pi_num &gt; #{piNum}
+		AND STATUS = 'ACTIVE' 
+		ORDER BY pi_num ASC
+		LIMIT 1;
+	</select> 
+	<select id="selectPrevPost" resultType="com.web.community.vo.PostInfoVO">
+		SELECT PI_NUM, PI_TITLE, PI_CONTENT, PI_CREATED, PI_VIEWS, UI_NUM, STATUS FROM post_info
+		WHERE pi_num &lt; #{piNum}
+		AND STATUS = 'ACTIVE' 
+		ORDER BY pi_num ASC
+		LIMIT 1;
+	</select>
+	<insert id="insertPost" useGeneratedKeys="true" keyProperty="piNum">
+	    INSERT INTO POST_INFO (PI_TITLE, PI_CONTENT, UI_NUM)
+	    VALUES (#{piTitle}, #{piContent}, #{uiNum})
+	</insert>
+	<update id="updatePost">
+		UPDATE POST_INFO
+		SET PI_TITLE=#{piTitle},
+		PI_CONTENT=#{piContent}
+		WHERE PI_NUM=#{piNum}
+	</update>
+	<update id="updatePostStatus">
+	    UPDATE POST_INFO
+	    SET STATUS = #{status}
+	    WHERE PI_NUM = #{piNum}
+	</update>
+	
+	<update id="updateViewCount"> 
+        UPDATE POST_INFO
+        SET PI_VIEWS = #{piViews}
+        WHERE PI_NUM = #{piNum};
+    </update>
+	
+	<delete id="deletePost">
+		DELETE FROM POST_INFO WHERE PI_NUM=#{piNum}
+	</delete>
+
+<delete id="deleteByUserId" parameterType="int">
+    DELETE FROM post_info WHERE ui_num = #{userId}
+</delete>
+
+<select id="selectPostIdsByUserId" resultType="int">
+    SELECT PI_NUM 
+    FROM POST_INFO 
+    WHERE UI_NUM = #{userId}
+</select>
+
+</mapper>

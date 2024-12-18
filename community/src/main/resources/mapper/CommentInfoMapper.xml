@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.CommentInfoMapper">
+	<select id="selectCommentsList" resultType="com.web.community.vo.CommentInfoVO"> 
+		SELECT CMI.CMI_NUM, CMI.CMI_CONTENT, CMI.CMI_CREATED, CMI.CMI_UPDATED, UI.UI_NUM, PI.PI_NUM, UI.UI_NICKNAME, CMI.STATUS
+		FROM COMMENT_INFO CMI
+		JOIN user_info UI
+		ON CMI.UI_NUM = UI.UI_NUM
+		JOIN post_info PI
+		ON CMI.PI_NUM = PI.PI_NUM
+		ORDER BY CMI.CMI_NUM DESC
+	    <if test="start != null and count != null">
+	        LIMIT #{start}, #{count}
+	    </if>
+	</select>
+	<select id="selectCommentsTotal" resultType="int">
+		SELECT COUNT(*) 
+		FROM COMMENT_INFO CMI
+		JOIN user_info UI ON CMI.UI_NUM = UI.UI_NUM
+		JOIN post_info PI ON CMI.PI_NUM = PI.PI_NUM
+		WHERE PI.PI_NUM = #{piNum}  <!-- piNum 필터 추가 -->
+	</select>
+	<select id="selectComments" resultType="com.web.community.vo.CommentInfoVO"> 
+		SELECT CMI.CMI_NUM, CMI.CMI_CONTENT, UI.UI_NICKNAME, CMI.CMI_CREATED, CMI.CMI_UPDATED, CMI.STATUS, UI.UI_NUM, PI.PI_NUM
+		FROM COMMENT_INFO CMI
+		JOIN user_info UI
+		ON CMI.UI_NUM = UI.UI_NUM
+		JOIN post_info PI
+		ON CMI.PI_NUM = PI.PI_NUM
+		WHERE PI.PI_NUM=#{piNum}
+		ORDER BY PI.PI_NUM DESC
+		LIMIT #{start}, #{count}
+	</select>
+	<select id="selectComment" resultType="com.web.community.vo.CommentInfoVO">
+		SELECT CMI.CMI_NUM, CMI.CMI_CONTENT, CMI.CMI_CREATED, CMI.CMI_UPDATED, UI.UI_NUM, PI.PI_NUM
+		FROM COMMENT_INFO CMI
+		JOIN user_info UI
+		ON CMI.UI_NUM = UI.UI_NUM
+		JOIN post_info PI
+		ON CMI.PI_NUM = PI.PI_NUM
+		WHERE UI.UI_NUM = #{uiNum}
+	</select>
+	<insert id="insertComment">
+		INSERT INTO COMMENT_INFO(CMI_CONTENT, UI_NUM, PI_NUM)
+		VALUES(#{cmiContent}, #{uiNum}, #{piNum})
+	</insert>
+	<update id="updateComment">
+		UPDATE COMMENT_INFO
+		SET CMI_CONTENT = #{cmiContent},
+		CMI_UPDATED = NOW()
+		WHERE CMI_NUM = #{cmiNum}
+	</update>
+	<update id="updateComments" parameterType="java.util.List">
+		UPDATE COMMENT_INFO
+		SET 
+			CMI_CONTENT = 
+			CASE
+				<foreach collection="list" item="comment">
+					WHEN CMI_NUM = #{comment.cmiNum} THEN #{comment.cmiContent}
+				</foreach>
+			END,
+			STATUS = 
+			CASE
+				<foreach collection="list" item="comment">
+					WHEN CMI_NUM = #{comment.cmiNum} THEN #{comment.status}
+				</foreach>
+			END,
+			CMI_UPDATED = NOW()
+		WHERE CMI_NUM IN
+		<foreach collection="list" item="comment" open="(" separator="," close=")">
+			#{comment.cmiNum}
+		</foreach>
+	</update>
+	
+	<delete id="deleteComment">
+	    DELETE FROM COMMENT_INFO
+	    WHERE CMI_NUM = #{cmiNum} AND UI_NUM = #{uiNum}
+	</delete>
+		
+	<!-- 특정 포스트가 삭제될 때 해당 포스트와 연결된 모든 댓글 삭제 -->
+	<delete id="deleteCommentsByPost">
+	    DELETE FROM COMMENT_INFO
+	    WHERE PI_NUM = #{piNum}
+	</delete>
+
+	<!-- <delete id="deleteByUserId">
+    DELETE FROM comment_info 
+    WHERE PI_NUM IN (SELECT PI_NUM FROM post_info WHERE ui_num = #{userId})
+    OR UI_NUM = #{userId}
+	</delete> -->
+</mapper>

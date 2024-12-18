@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.ImageInfoMapper">
+    <select id="selectImg" resultType="com.web.community.vo.ImageInfoVO">
+        SELECT IMG_URL, PI_NUM
+        FROM IMAGE_INFO
+        WHERE PI_NUM = #{piNum}
+    </select>
+    <insert id="insertImg">
+        INSERT INTO IMAGE_INFO (IMG_URL, PI_NUM)
+        VALUES (#{imgUrl}, #{piNum}) 
+    </insert>
+    <update id="updateImg">
+        UPDATE IMAGE_INFO
+        SET IMG_URL = #{imgUrl}
+        WHERE PI_NUM = #{piNum}
+    </update>
+    <delete id="deleteImg"> 
+        DELETE FROM IMAGE_INFO
+        WHERE PI_NUM = #{piNum}
+    </delete>
+    
+
+<delete id="deleteByUserId" parameterType="int">
+    DELETE FROM image_info 
+    WHERE PI_NUM IN (SELECT PI_NUM FROM post_info WHERE ui_num = #{userId})
+</delete>
+
+</mapper>

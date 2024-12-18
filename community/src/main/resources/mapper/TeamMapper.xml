@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.TeamMapper">
+
+    <!-- 모든 팀 조회 -->
+    <select id="selectTeams" resultType="com.web.community.vo.TeamVO">
+        SELECT * FROM team_info
+    </select>
+    
+    <!-- 특정 팀 조회 -->
+    <select id="selectTeam" parameterType="int" resultType="com.web.community.vo.TeamVO">
+        SELECT * FROM team_info WHERE tm_num = #{tmNum}
+    </select>
+    
+    <!-- 팀 추가 -->
+    <insert id="insertTeam" parameterType="com.web.community.vo.TeamVO">
+        INSERT INTO team_info (tm_name, tm_coach)
+        VALUES (#{tmName}, #{tmCoach})
+    </insert>
+    
+    <!-- 팀 정보 수정 -->
+    <update id="updateTeam" parameterType="com.web.community.vo.TeamVO">
+        UPDATE team_info
+        SET tm_name = #{tmName}, tm_coach = #{tmCoach}
+        WHERE tm_num = #{tmNum}
+    </update> 
+    
+    <!-- 다중 팀 정보 수정 -->
+    <update id="updateTeams" parameterType="java.util.List">
+	    <foreach collection="list" item="team" separator=";">
+	        UPDATE team_info
+	        SET TM_NAME = #{team.tmName},
+	        TM_COACH = #{team.tmCoach}
+	        WHERE TM_NUM = #{team.tmNum}
+	    </foreach>
+	</update>
+    
+    <!-- 팀 삭제 -->
+    <delete id="deleteTeam" parameterType="int">
+        DELETE FROM team_info WHERE tm_num = #{tmNum}
+    </delete>
+	
+	
+
+
+</mapper>

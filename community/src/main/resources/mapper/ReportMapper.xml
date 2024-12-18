@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.ReportInfoMapper">
+	<select id="selectReportsByComments" resultType="com.web.community.vo.ReportVO">
+        SELECT RI.RI_NUM, UI.UI_NICKNAME, UI.UI_ID, RI.REPORTED_TYPE, RI.REPORTED_NUM, RI.RI_REASON, RI.STATUS, RI.RI_CREATED, RI.RI_UPDATED
+        FROM REPORT_INFO RI
+        INNER JOIN USER_INFO UI
+        ON RI.UI_NUM = UI.UI_NUM
+		WHERE RI.STATUS = '대기중'
+		AND RI.REPORTED_TYPE='댓글'
+	</select>
+	<select id="selectReportsByPosts" resultType="com.web.community.vo.ReportVO">
+        SELECT RI.RI_NUM, UI.UI_NICKNAME, UI.UI_ID, RI.REPORTED_TYPE, RI.REPORTED_NUM, RI.RI_REASON, RI.STATUS, RI.RI_CREATED, RI.RI_UPDATED
+        FROM REPORT_INFO RI
+        INNER JOIN USER_INFO UI
+        ON RI.UI_NUM = UI.UI_NUM
+		WHERE RI.STATUS = '대기중'
+		AND RI.REPORTED_TYPE='게시물'
+	</select>
+	
+    <insert id="insertReport" parameterType="com.web.community.vo.ReportVO" useGeneratedKeys="true" keyProperty="riNum">
+	    INSERT INTO REPORT_INFO(UI_NUM, REPORTED_TYPE, REPORTED_NUM, RI_REASON)
+	    VALUES (#{uiNum}, #{reportedType}, #{reportedNum}, #{riReason})
+	</insert>
+
+
+    <update id="updateReportStatus">
+        UPDATE REPORT_INFO
+        SET STATUS = #{status},
+        	RI_UPDATED = NOW()
+        WHERE RI_NUM = #{riNum}
+    </update>
+
+    <delete id="deleteReport">
+        DELETE FROM REPORT_INFO
+        WHERE RI_NUM = #{riNum}
+    </delete>
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.UserInfoMapper">
+	<select id="isAdminLogin" resultType="com.web.community.vo.UserInfoVO">
+		SELECT UI_ID, UI_PWD, isAdmin 
+	    FROM USER_INFO
+	    WHERE isAdmin = #{isAdmin}
+	</select>
+	<select id="selectUserForLogin"
+		resultType="com.web.community.vo.UserInfoVO">
+		SELECT UI_NUM, UI_ID, UI_PWD, UI_NAME, UI_NICKNAME,
+		UI_EMAIL, UI_PHONE, UI_FAVORITE, isAdmin
+		FROM USER_INFO
+		WHERE UI_ID = #{uiId}
+		AND
+		UI_PWD = #{uiPwd}
+	</select>
+	<select id="selectUsersForAdmin" resultType="com.web.community.vo.UserInfoVO">
+		SELECT UI_NUM, UI_ID, UI_PWD, UI_NAME, UI_NICKNAME, UI_EMAIL, UI_PHONEM UI_FAVORITE, UI_CREDAT, UI_CRETIM
+		FROM USER_INFO
+	    ORDER BY UI_NUM DESC
+	    LIMIT #{start}, #{count};
+	</select>
+	<select id="selectUsersTotal" resultType="int">
+		SELECT COUNT(*) 
+		FROM USER_INFO
+	</select>
+
+	<!-- <update id="updateUser"
+		parameterType="com.web.community.vo.UserInfoVO">
+		UPDATE user_info
+		SET UI_NAME = #{uiName},
+		UI_ID = #{uiId},
+		UI_NICKNAME = #{uiNickName},
+		UI_EMAIL = #{uiEmail},
+		UI_PHONE =
+		#{uiPhone},
+		UI_FAVORITE = #{uiFavorite}
+		WHERE UI_NUM = #{uiNum}
+	</update> -->
+
+	<select id="selectUserById"
+		resultType="com.web.community.vo.UserInfoVO">
+		SELECT * FROM USER_INFO WHERE UI_ID = #{uiId}
+	</select>
+
+
+	<select id="selectUser"
+		resultType="com.web.community.vo.UserInfoVO">
+		SELECT UI_NUM, UI_ID, UI_PWD, UI_NAME, UI_NICKNAME,
+		UI_EMAIL, UI_PHONE, UI_FAVORITE, UI_CREDAT, UI_CRETIM
+		FROM USER_INFO
+		WHERE UI_NUM = #{uiNum}
+	</select>
+
+	<insert id="insertUser"
+		parameterType="com.web.community.vo.UserInfoVO">
+		INSERT INTO user_info (UI_NAME, UI_ID, UI_PWD,
+		UI_NICKNAME, UI_EMAIL,
+		UI_PHONE,
+		UI_FAVORITE, emailVerified)
+		VALUES
+		(#{uiName}, #{uiId}, #{uiPwd}, #{uiNickName}, #{uiEmail}, #{uiPhone},
+		#{uiFavorite}, #{emailVerified})
+	</insert>
+
+	<select id="selectUsers"
+		resultType="com.web.community.vo.UserInfoVO">
+		SELECT UI_NUM, UI_ID, UI_PWD, UI_NAME, UI_NICKNAME,
+		UI_EMAIL, UI_PHONE,
+		UI_FAVORITE, UI_CREDAT, UI_CRETIM
+		FROM USER_INFO
+	</select>
+
+	<update id="updateUser"
+		parameterType="com.web.community.vo.UserInfoVO">
+		UPDATE user_info
+		SET UI_NAME = #{uiName},
+		UI_ID = #{uiId},
+		UI_NICKNAME = #{uiNickName},
+		UI_EMAIL = #{uiEmail},
+		UI_PHONE = #{uiPhone},
+		UI_FAVORITE = #{uiFavorite}
+		WHERE UI_NUM = #{uiNum}
+	</update>
+
+	<!-- 다중 사용자 정보 수정 -->
+	<update id="updateUsers" parameterType="java.util.List">
+		<foreach collection="list" item="user" separator=";">
+			UPDATE
+			user_info
+			SET UI_NAME = #{user.uiName},
+			UI_ID = #{user.uiId},
+			UI_NICKNAME = #{user.uiNickName},
+			UI_EMAIL = #{user.uiEmail},
+			UI_PHONE = #{user.uiPhone},
+			UI_FAVORITE = #{user.uiFavorite}
+			WHERE UI_NUM = #{user.uiNum}
+		</foreach>
+	</update>
+
+
+	<select id="selectUserByNickname"
+		resultType="com.web.community.vo.UserInfoVO">
+		SELECT * FROM USER_INFO WHERE UI_NICKNAME = #{uiNickName}
+	</select>
+
+	<select id="selectUserByPhone"
+		resultType="com.web.community.vo.UserInfoVO">
+		SELECT * FROM USER_INFO WHERE UI_PHONE = #{uiPhone} LIMIT 1
+	</select>
+	
+	<!-- <delete id="deleteUser" parameterType="int">
+	    DELETE FROM USER_INFO WHERE UI_NUM = #{uiNum}
+	</delete> -->
+	
+	<!-- <delete id="deleteUsers">
+		<foreach collection="uiNums" item="uiNum" separator=";">
+			DELETE FROM USER_INFO WHERE UI_NUM = #{uiNum}
+		</foreach>
+	</delete> -->
+	 <select id="findByEmail" parameterType="String" resultType="com.web.community.vo.UserInfoVO">
+        SELECT * FROM USER_INFO WHERE UI_EMAIL = #{email}
+    </select>
+	<delete id="deleteUser" parameterType="int">
+    	DELETE FROM USER_INFO WHERE UI_NUM = #{uiNum}
+	</delete>
+	<update id="updatePassword">
+    UPDATE USER_INFO
+    SET UI_PWD = #{uiPwd}
+    WHERE UI_ID = #{uiId}
+</update>
+<select id="isEmailValid2" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM USER_INFO
+        WHERE UI_EMAIL = #{uiEmail}
+    </select>
+
+<select id="isEmailValid" resultType="boolean">
+    SELECT COUNT(*) > 0
+    FROM USER_INFO
+    WHERE UI_ID = #{uiId} AND UI_EMAIL = #{uiEmail}
+</select>
+<select id="findRecentSignupCounts" resultType="com.web.community.vo.UserInfoVO">
+	SELECT DATE_FORMAT(UI_CREDAT, '%Y-%m') AS month, COUNT(*) AS SIGNUP_COUNT
+	FROM user_info
+	WHERE UI_CREDAT &gt;= DATE_SUB(NOW(), INTERVAL 5 MONTH)
+	GROUP BY month
+	ORDER BY MONTH;
+</select> 
+</mapper>

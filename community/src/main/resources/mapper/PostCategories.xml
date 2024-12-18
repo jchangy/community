@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.PostCategories">
+	<!-- 특정 게시물에 해당하는 카테고리 조회 -->
+    <select id="selectCategoriesByPostNum" resultType="com.web.community.vo.CategoryInfoVO">
+        SELECT C.CGI_NUM, C.CGI_NAME, C.CGI_DESC
+        FROM POSTCATEGORIES PC
+        JOIN CATEGORY_INFO C ON PC.CGI_NUM = C.CGI_NUM
+        WHERE PC.PI_NUM = #{piNum};
+    </select>
+    <!-- 특정 카테고리에 해당하는 게시물 조회 -->
+    <select id="selectPostsByCategoryNum" resultType="com.web.community.vo.PostInfoVO">
+        SELECT PI.PI_NUM, PI.PI_TITLE, PI.PI_CONTENT, PI.PI_CREATED, PI.PI_UPDATED, PI.PI_VIEWS
+        FROM POSTCATEGORIES PC
+        JOIN POST_INFO PI ON PC.PI_NUM = PI.PI_NUM
+        WHERE PC.CGI_NUM = #{cgiNum};
+    </select>
+    <!-- 게시물-카테고리 관계 추가 -->
+    <insert id="insertPostCategories">
+        INSERT INTO POSTCATEGORIES (PI_NUM, CGI_NUM)
+        VALUES (#{piNum}, #{cgiNum});
+    </insert>
+    <!-- 게시물-카테고리 관계 삭제 -->
+    <delete id="deletePostCategories">
+        DELETE FROM POSTCATEGORIES
+        WHERE PI_NUM = #{piNum} AND CGI_NUM = #{cgiNum};
+    </delete>
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.NaverLoginMapper">
+
+    <select id="findByUiId" resultType="com.web.community.vo.UserInfoVO">
+        SELECT * FROM user_info WHERE ui_id = #{uiId}
+    </select>
+
+    <insert id="insertNaverUser" parameterType="com.web.community.vo.UserInfoVO">
+        INSERT INTO user_info (ui_id, ui_pwd, ui_name, ui_nickname, ui_email, ui_phone, isNaverUser)
+        VALUES (#{uiId}, #{uiPwd}, #{uiName}, #{uiNickName}, #{uiEmail}, #{uiPhone}, #{isNaverUser})
+    </insert>
+
+    <select id="countByNickname" resultType="int">
+        SELECT COUNT(*) FROM user_info WHERE ui_nickname = #{nickname}
+    </select>
+
+    <select id="findByNickname" resultType="com.web.community.vo.UserInfoVO">
+        SELECT * FROM user_info WHERE ui_nickname = #{nickname}
+    </select>
+
+</mapper>

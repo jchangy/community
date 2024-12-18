@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.PlayerMapper">
+
+    <!-- 모든 선수 조회 -->
+    <select id="selectPlayers" resultType="com.web.community.vo.PlayerVO">
+        SELECT * FROM Player_Info
+    </select>
+
+    <!-- 특정 선수 조회 -->
+    <select id="selectPlayer" parameterType="int" resultType="com.web.community.vo.PlayerVO">
+        SELECT * FROM Player_Info WHERE PI_NUM = #{piNum}
+    </select>
+
+    <!-- 선수 추가 -->
+    <insert id="insertPlayer" parameterType="com.web.community.vo.PlayerVO">
+        INSERT INTO Player_Info (PI_NUM, PI_NAME, PI_DATE_OF_BIRTH, PI_NATIONALITY, PI_POSITION, PI_SHIRT_NUMBER, TM_NUM)
+        VALUES (#{piNum}, #{piName}, #{piDateOfBirth}, #{piNationality}, #{piPosition}, #{piShirtNumber}, #{tmNum})
+    </insert>
+
+    <!-- 선수 수정 -->
+    <update id="updatePlayer" parameterType="com.web.community.vo.PlayerVO">
+        UPDATE Player_Info
+        SET PI_NAME = #{piName}, PI_DATE_OF_BIRTH = #{piDateOfBirth}, PI_NATIONALITY = #{piNationality},
+            PI_POSITION = #{piPosition}, PI_SHIRT_NUMBER = #{piShirtNumber}, TM_NUM = #{tmNum}
+        WHERE PI_NUM = #{piNum}
+    </update>
+
+    <!-- 선수 삭제 -->
+    <delete id="deletePlayer" parameterType="int">
+        DELETE FROM Player_Info WHERE PI_NUM = #{piNum}
+    </delete>
+
+    <!-- 다수 선수 추가 -->
+    <!-- <insert id="insertPlayers" parameterType="java.util.List">
+        INSERT INTO Player_Info (PI_NAME, PI_DATE_OF_BIRTH, PI_NATIONALITY, PI_POSITION, PI_SHIRT_NUMBER, TM_NUM)
+        VALUES
+        <foreach collection="list" item="player" separator=",">
+            (#{player.piName}, #{player.piDateOfBirth}, #{player.piNationality}, #{player.piPosition}, #{player.piShirtNumber}, #{player.tmNum})
+        </foreach>
+    </insert>
+
+    특정 팀의 선수 목록 조회
+    <select id="selectPlayersByTeam" parameterType="int" resultType="com.web.community.vo.PlayerVO">
+        SELECT * FROM Player_Info WHERE TM_NUM = #{tmNum}
+    </select>
+ -->
+ 
+ <select id="selectPlayersByTeam" parameterType="int" resultType="com.web.community.vo.PlayerVO">
+    SELECT PI_NUM as piNum, PI_NAME as piName, PI_DATE_OF_BIRTH as piDateOfBirth, 
+           PI_NATIONALITY as piNationality, PI_POSITION as piPosition, 
+           PI_SHIRT_NUMBER as piShirtNumber, TM_NUM as tmNum
+    FROM Player_Info 
+    WHERE TM_NUM = #{tmNum}
+</select>
+</mapper>

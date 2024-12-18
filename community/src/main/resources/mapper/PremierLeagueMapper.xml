@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.web.community.mapper.PremierLeagueMapper">
+
+    <insert id="insertMatch" parameterType="com.web.community.vo.schedule.Match">
+        INSERT INTO premier_league_match (
+            id, `utc_date`, status, matchday, stage, group_name, 
+            last_updated, home_team_id, away_team_id,
+            winner, duration, full_time_home, full_time_away,
+            half_time_home, half_time_away, season_id
+        ) VALUES (
+            #{id}, #{utcDate}, #{status}, #{matchday}, #{stage}, #{group},
+            #{lastUpdated}, #{homeTeam.id}, #{awayTeam.id},
+            #{score.winner}, #{score.duration}, 
+            #{score.fullTime.home}, #{score.fullTime.away},
+            #{score.halfTime.home}, #{score.halfTime.away},
+            #{season.id}
+        )
+    </insert>
+
+    <insert id="insertTeam" parameterType="com.web.community.vo.schedule.Team">
+        INSERT INTO team (
+            id, name, short_name, tla, crest
+        ) VALUES (
+            #{id}, #{name}, #{shortName}, #{tla}, #{crest}
+        ) ON DUPLICATE KEY UPDATE
+            name = #{name},
+            short_name = #{shortName},
+            tla = #{tla},
+            crest = #{crest},
+            updated = CURRENT_TIMESTAMP
+    </insert>
+
+    <insert id="insertSeason" parameterType="com.web.community.vo.schedule.Season">
+        INSERT INTO season (
+            id, start_date, end_date, current_matchday, winner
+        ) VALUES (
+            #{id}, #{startDate}, #{endDate}, #{currentMatchday}, #{winner}
+        ) ON DUPLICATE KEY UPDATE
+            current_matchday = #{currentMatchday},
+            winner = #{winner},
+            updated = CURRENT_TIMESTAMP
+    </insert>
+    
+
+    <select id="existsTeamById" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM team WHERE id = #{teamId}
+        )
+    </select>
+    <select id="existMatchById" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM premier_league_match WHERE id = #{teamId}
+        )
+    </select>
+
+    <select id="existsSeasonById" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM season WHERE id = #{seasonId}
+        )
+    </select>
+
+</mapper>

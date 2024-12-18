@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '2.7.18'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.web'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+bootWar {
+    archiveFileName = "community.war"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // 기존 의존성들
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:2.1.0'
+
+	
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+	implementation group: 'org.json', name: 'json', version: '20200518'
+    implementation 'com.google.code.gson:gson:2.10.1' // 최신 버전 확인 후 추가
+
+	implementation 'org.json:json:20210307'
+	
+	
+	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:2.1.0'
+
+    implementation 'javax.servlet:jstl:1.2'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.2'
+    implementation 'com.google.api-client:google-api-client:1.33.0'
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev222-1.25.0'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.33.0'
+    implementation 'com.googlecode.log4jdbc:log4jdbc:1.2'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.3.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // 사용 중인 DB에 맞게 설정
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+
+    
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
